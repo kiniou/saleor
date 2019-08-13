@@ -106,26 +106,16 @@ def refund(payment_information: PaymentData, config: GatewayConfig) -> GatewayRe
     try:
         intent = client.PaymentIntent.retrieve(id=payment_information.token)
         refund = intent["charges"]["data"][0].refund(amount=stripe_amount)
-        response = GatewayResponse(
-            is_success=refund.status == "succeeded",
-            action_required=False,
-            transaction_id=intent.id,
+        response = _success_response(
+            intent=intent,
+            kind=TransactionKind.REFUND,
+            success=refund.status == "succeeded",
             amount=payment_information.amount,
             currency=get_currency_from_stripe(refund.currency),
-            error=None,
-            kind=TransactionKind.REFUND,
-            raw_response=refund,
         )
     except stripe.error.StripeError as exc:
-        response = GatewayResponse(
-            is_success=False,
-            action_required=False,
-            transaction_id=payment_information.token,
-            amount=payment_information.amount,
-            currency=payment_information.currency,
-            error=exc.user_message,
-            kind=TransactionKind.REFUND,
-            raw_response=exc.json_body or {},
+        response = _error_response(
+            kind=TransactionKind.REFUND, exc=exc, payment_info=payment_information
         )
     return response
 
@@ -220,17 +210,23 @@ def _error_response(
 
 
 def _success_response(
-    intent: stripe.PaymentIntent, kind: TransactionKind, success=bool, customer_id=None
+    intent: stripe.PaymentIntent,
+    kind: TransactionKind,
+    success: bool = True,
+    amount=None,
+    currency=None,
+    customer_id=None,
+    raw_response=None,
 ):
-    currency = get_currency_for_stripe(intent.currency)
+    currency = currency or get_currency_from_stripe(intent.currency)
     return GatewayResponse(
         is_success=success,
         action_required=intent.status == "requires_action",
         transaction_id=intent.id,
-        amount=get_amount_from_stripe(intent.amount, currency),
-        currency=get_currency_from_stripe(intent.currency),
+        amount=amount or get_amount_from_stripe(intent.amount, currency),
+        currency=currency,
         error=None,
         kind=kind,
-        raw_response=intent,
+        raw_response=raw_response or intent,
         customer_id=customer_id,
     )

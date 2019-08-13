@@ -87,26 +87,14 @@ def confirm(payment_information: PaymentData, config: GatewayConfig) -> GatewayR
     try:
         intent = client.PaymentIntent(id=payment_information.token)
         intent.confirm()
-        response = GatewayResponse(
-            is_success=intent.status in ("succeeded"),
-            action_required=False,
-            transaction_id=intent.id,
-            amount=get_amount_from_stripe(intent.amount, intent.currency),
-            currency=get_currency_from_stripe(intent.currency),
-            error=None,
+        response = _success_response(
+            intent=intent,
             kind=TransactionKind.CAPTURE,
-            raw_response=capture,
+            success=intent.status == "succeeded",
         )
     except stripe.error.StripeError as exc:
-        response = GatewayResponse(
-            is_success=False,
-            action_required=False,
-            transaction_id=payment_information.token,
-            amount=payment_information.amount,
-            currency=payment_information.currency,
-            error=exc.user_message,
-            kind=TransactionKind.CAPTURE,
-            raw_response=exc.json_body or {},
+        response = _error_response(
+            kind=TransactionKind.CAPTURE, exc=exc, payment_info=payment_information
         )
     return response
 

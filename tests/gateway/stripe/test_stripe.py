@@ -187,8 +187,10 @@ def test_capture(stripe_authorized_payment, sandbox_gateway_config):
 def test_capture_3d_secure(stripe_payment, sandbox_gateway_config):
     PAYMENT_INTENT = "pi_1F6YmgIUmJaD6Oqv77HUh6qq"
     ERROR = (
-        "This PaymentIntent could not be captured because it has a status of requires_action."
-        " Only a PaymentIntent with one of the following statuses may be captured: requires_capture."
+        "This PaymentIntent could not be captured because it"
+        "has a status of requires_action."
+        " Only a PaymentIntent with one of the following "
+        "statuses may be captured: requires_capture."
     )
     payment_info = create_payment_information(stripe_payment, PAYMENT_INTENT)
     response = capture(payment_info, sandbox_gateway_config)

@@ -1,11 +1,18 @@
 from decimal import Decimal
 from math import isclose
-from saleor.payment.gateways.stripe_new import (
+
+from django_countries import countries
+
+from saleor.payment.gateways.stripe_new.utils import (
     get_amount_for_stripe,
     get_amount_from_stripe,
     get_currency_from_stripe,
     get_currency_for_stripe,
+    get_payment_billing_fullname,
+    shipping_to_stripe_dict,
 )
+from saleor.payment.interface import AddressData
+from saleor.payment.utils import create_payment_information
 
 
 def test_get_amount_for_stripe():
@@ -42,3 +49,30 @@ def test_get_currency_from_stripe():
     assert get_currency_from_stripe("USD") == "USD"
     assert get_currency_from_stripe("usd") == "USD"
     assert get_currency_from_stripe("uSd") == "USD"
+
+
+def test_get_payment_billing_fullname(payment_dummy):
+    payment_info = create_payment_information(payment_dummy)
+
+    expected_fullname = "%s %s" % (
+        payment_dummy.billing_last_name,
+        payment_dummy.billing_first_name,
+    )
+    assert get_payment_billing_fullname(payment_info) == expected_fullname
+
+
+def test_shipping_address_to_stripe_dict(address):
+    address_data = AddressData(**address.as_data())
+    expected_address_dict = {
+        "name": "John Doe",
+        "phone": "+48713988102",
+        "address": {
+            "line1": address.street_address_1,
+            "line2": address.street_address_2,
+            "city": address.city,
+            "state": address.country_area,
+            "postal_code": address.postal_code,
+            "country": dict(countries).get(address.country, ""),
+        },
+    }
+    assert shipping_to_stripe_dict(address_data) == expected_address_dict

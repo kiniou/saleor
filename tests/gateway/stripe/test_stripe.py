@@ -5,7 +5,7 @@ import os
 import pytest
 
 from saleor.payment import ChargeStatus
-from saleor.payment.gateways.stripe_new import (
+from saleor.payment.gateways.stripe import (
     TransactionKind,
     authorize,
     capture,
@@ -35,7 +35,7 @@ RECORD = False
 @pytest.fixture()
 def gateway_config():
     return GatewayConfig(
-        gateway_name="stripe_new",
+        gateway_name="stripe",
         auto_capture=True,
         template_path="template.html",
         connection_params={

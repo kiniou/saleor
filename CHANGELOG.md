@@ -51,6 +51,7 @@ All notable, unreleased changes to this project will be documented in this file.
 - Fix bulk actions - #4618 by @dominik-zeglen
 - Remove dashboard 2.0 files - #4631 by @dominik-zeglen
 - Refactoring of password recovery system - #4617 by @fowczarek
+- New stripe gateway implementation based on Stripe PaymentIntents API - #4606 by @salwator
 
 ## 2.8.0
 

@@ -485,8 +485,8 @@ def gateway_void(payment) -> Transaction:
 
 @require_active_payment
 def gateway_confirm(payment) -> Transaction:
-    if not payment.can_void():
-        raise PaymentError("Only pre-authorized transactions can be voided.")
+    if not payment.can_confirm():
+        raise PaymentError("Only active and not paid payments can be confirmed.")
 
     auth_transaction = payment.transactions.filter(
         kind=TransactionKind.AUTH, is_success=True

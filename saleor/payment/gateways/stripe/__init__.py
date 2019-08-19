@@ -10,7 +10,6 @@ from ...interface import (
     GatewayResponse,
     PaymentData,
 )
-from .forms import StripePaymentModalForm
 from .utils import (
     get_amount_for_stripe,
     get_amount_from_stripe,
@@ -172,16 +171,6 @@ def process_payment(
     payment_information: PaymentData, config: GatewayConfig
 ) -> GatewayResponse:
     return authorize(payment_information, config)
-
-
-def create_form(
-    data: Dict, payment_information: PaymentData, connection_params: Dict
-) -> StripePaymentModalForm:
-    return StripePaymentModalForm(
-        data=data,
-        payment_information=payment_information,
-        gateway_params=connection_params,
-    )
 
 
 def _get_client(**connection_params):

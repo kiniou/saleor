@@ -1,16 +1,16 @@
+import os
 from decimal import Decimal
 from math import isclose
-import os
 
 import pytest
 
 from saleor.payment import ChargeStatus
 from saleor.payment.gateways.stripe import (
     TransactionKind,
+    _get_client,
     authorize,
     capture,
     confirm,
-    _get_client,
     get_client_token,
     list_client_sources,
     refund,

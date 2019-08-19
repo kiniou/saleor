@@ -4,8 +4,8 @@ import stripe
 
 from ... import TransactionKind
 from ...interface import (
-    CustomerSource,
     CreditCardInfo,
+    CustomerSource,
     GatewayConfig,
     GatewayResponse,
     PaymentData,

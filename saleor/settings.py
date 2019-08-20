@@ -182,7 +182,10 @@ if not DEBUG:
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(PROJECT_ROOT, "templates")],
+        "DIRS": [
+            os.path.join(PROJECT_ROOT, "templates.custom"),
+            os.path.join(PROJECT_ROOT, "templates"),
+        ],
         "OPTIONS": {
             "debug": DEBUG,
             "context_processors": context_processors,
